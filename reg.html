@@ -1,0 +1,254 @@
+s<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Registration Form with Animations</title>
+    <link rel="stylesheet" href="style.css">
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+ * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f0f0f0;
+  overflow: hidden;
+  position: relative; /* Allow z-index to work */
+}
+
+#canvas-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1; /* Ensure canvas is in the background */
+}
+
+.form-container {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 400px;
+  position: absolute; /* Ensure form stays in front of the canvas */
+  z-index: 1; /* Ensure form is above the Three.js canvas */
+}
+
+.form-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.form-container label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.form-container input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.form-container button {
+  width: 100%;
+  padding: 10px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.form-container button:hover {
+  background-color: #218838;
+}
+
+/* Responsive Styling */
+@media (max-width: 600px) {
+  .form-container {
+    width: 90%;
+  }
+}
+
+  </style>
+  </head>
+  <body>
+    <!-- Three.js Canvas -->
+    <div id="canvas-container">
+      <canvas id="three-canvas"></canvas>
+    </div>
+
+    <!-- Registration Form -->
+    <div class="form-container">
+      <h2>Register</h2>
+      <form method="post" action="/register" id="registration-form">
+        <label for="name">Full Name</label>
+        <input type="text" id="name" name="name" required
+          placeholder="Enter your full name">
+
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required
+          placeholder="Enter your email">
+        <label for="phone">Phone</label>
+        <input type="number" id="phone" name="phone" required
+          placeholder="Phone No.">
+        <label for="gender">gender</label>
+        <input type="radio" id="gender" name="gender" value="Male" required>Male
+
+        <input type="radio" id="gender" name="gender" value="Female"
+          required>Female
+        <input type="radio" id="gender" name="gender" value="Others"
+          required>Others
+        <label for="address">Street Address</label>
+        <textarea id="address" name="address" required
+          placeholder="Enter your address"></textarea>
+
+        <!-- City -->
+        <label for="city">City</label>
+        <input type="text" id="city" name="city" required
+          placeholder="Enter your city">
+
+        <!-- State -->
+        <label for="state">State</label>
+        <select id="state" name="state" required>
+          <option value disabled selected>Select your state</option>
+          <option value="Rajasthan">Rajasthan</option>
+          <option value="Haryana">Haryana</option>
+          <option value="Punjab">Punjab</option>
+        </select>
+
+        <!-- Zip Code -->
+        <label for="zip">Zip Code</label>
+        <input type="text" id="zip" name="zip" required pattern="\d{6}"
+          placeholder="Enter your 6-digit zip code">
+
+        <button type="submit" id="submit">Submit</button>
+      </form>
+    </div>
+
+    <script>// THREE.js Scene Setup
+            let scene, camera, renderer, particles, geometry, material, particleSystem;
+            let particleCount = 500;
+            let particlesArray = [];
+            
+            // Initialize the scene
+            function init() {
+              scene = new THREE.Scene();
+              camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+              renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('three-canvas') });
+              renderer.setSize(window.innerWidth, window.innerHeight);
+              document.body.appendChild(renderer.domElement);
+            
+              // Set background color
+              scene.background = new THREE.Color(0x111111);
+            
+              // Particle System Setup
+              geometry = new THREE.BufferGeometry();
+              const positions = new Float32Array(particleCount * 3);
+              for (let i = 0; i < particleCount; i++) {
+                positions[i * 3] = Math.random() * 2000 - 1000; // X position
+                positions[i * 3 + 1] = Math.random() * 2000 - 1000; // Y position
+                positions[i * 3 + 2] = Math.random() * 2000 - 1000; // Z position
+              }
+              geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            
+              material = new THREE.PointsMaterial({
+                color: 0xffffff, // White color for particles
+                size: 5,
+                transparent: true,
+                opacity: 0.7
+              });
+            
+              particleSystem = new THREE.Points(geometry, material);
+              scene.add(particleSystem);
+            
+              // Camera position
+              camera.position.z = 500;
+            
+              animate();
+            }
+            
+            // Animate particles and handle rotations
+            function animate() {
+              requestAnimationFrame(animate);
+            
+              // Rotate particles slightly for some dynamic effect
+              particleSystem.rotation.x += 0.002;
+              particleSystem.rotation.y += 0.002;
+            
+              // Make particles float in space by updating their positions
+              const positions = geometry.attributes.position.array;
+              for (let i = 0; i < particleCount; i++) {
+                positions[i * 3 + 1] -= Math.random() * 0.5; // Move particles down slowly
+                if (positions[i * 3 + 1] < -1000) {
+                  positions[i * 3 + 1] = 1000; // Reset particle to top once it's off-screen
+                }
+              }
+              geometry.attributes.position.needsUpdate = true;
+            
+              renderer.render(scene, camera);
+            }
+            
+            // Resizing the canvas on window resize
+            window.addEventListener('resize', () => {
+              renderer.setSize(window.innerWidth, window.innerHeight);
+              camera.aspect = window.innerWidth / window.innerHeight;
+              camera.updateProjectionMatrix();
+            });
+            
+            // Initialize Three.js scene
+            init();
+            
+  </script>
+    <script>
+      document.getElementById('registrationForm').addEventListener('submit',
+      async (event) => {
+    event.preventDefault();
+
+    const formData = new FormData(event.target);
+    const data = Object.fromEntries(formData.entries());
+
+    //console.log('Form Data:', data); // Log data before sending
+
+    try {
+        const response = await fetch('http://localhost:5500/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        });
+
+        const result = await response.json();
+        if (response.redirected) {
+            //alert('Registration successful!');
+            window.location.href = response.url; 
+        } 
+    } catch (error) {
+        alert('Error submitting form');
+        console.error(error);
+    }
+});
+
+
+
+            </script>
+
+  </body>
+</html>
