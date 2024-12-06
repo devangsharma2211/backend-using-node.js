@@ -4,6 +4,8 @@ const bodyParser = require("body-parser");
 const path = require("path");
 const app = express();
 const { google } = require('googleapis');
+const dbURI = process.env.DB_URI;
+const apiKey = process.env.API_KEY;
 
 // MongoDB Connection
 const mongoUri = "mongodb://localhost:27017/test";
@@ -100,7 +102,12 @@ app.post('/register', async (req, res) => {
 
 
 // Server Start
-const port = 5500;
-app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
+const PORT = process.env.PORT || 3000;
+
+app.get("/", (req, res) => {
+    res.send("Hello, World!");
+});
+
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
