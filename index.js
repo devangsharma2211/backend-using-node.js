@@ -37,8 +37,8 @@ const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'sdevang567@gmail.com',
-        pass: 'vaol lbjy cdzk luqm',  // or use an app password if you have 2-factor authentication enabled
+        user: '#',
+        pass: '#',  // or use an app password if you have 2-factor authentication enabled
     },
 });
 
